@@ -1,6 +1,7 @@
 package com.mrcrayfish.furniture.proxy;
 
 import com.mrcrayfish.furniture.client.GifCache;
+import com.mrcrayfish.furniture.client.MirrorRenderGlobal;
 import com.mrcrayfish.furniture.handler.ClientEvents;
 import com.mrcrayfish.furniture.handler.GuiDrawHandler;
 import com.mrcrayfish.furniture.handler.InputHandler;
@@ -157,7 +158,7 @@ public class ClientProxy extends CommonProxy
     {
         if(event.getWorld() instanceof WorldClient)
         {
-            MirrorRenderer.mirrorGlobalRenderer.setWorldAndLoadRenderers((WorldClient) event.getWorld());
+            MirrorRenderer.mirrorGlobalRenderer.updateWorldLoad((WorldClient) event.getWorld());
         }
     }
 
@@ -167,6 +168,7 @@ public class ClientProxy extends CommonProxy
         if(event.getWorld() instanceof WorldClient)
         {
             MirrorRenderer.clearRegisteredMirrors();
+            MirrorRenderer.mirrorGlobalRenderer.updateWorldUnload();
         }
     }
 
@@ -191,7 +193,7 @@ public class ClientProxy extends CommonProxy
         if(event.getEntityPlayer() == renderEntity)
         {
             Minecraft.getMinecraft().getRenderManager().renderViewEntity = backupEntity;
-            renderEntity = null;
+            backupEntity = renderEntity = null;
         }
     }
 }

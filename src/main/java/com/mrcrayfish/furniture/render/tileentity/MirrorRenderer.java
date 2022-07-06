@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MirrorRenderer extends TileEntitySpecialRenderer<TileEntityMirror>
 {
     private static Minecraft mc = Minecraft.getMinecraft();
-    public static RenderGlobal mirrorGlobalRenderer = new MirrorRenderGlobal(mc);
+    public static MirrorRenderGlobal mirrorGlobalRenderer = new MirrorRenderGlobal(mc);
     private int quality = ConfigurationHandler.mirrorQuality;
     private long renderEndNanoTime;
 

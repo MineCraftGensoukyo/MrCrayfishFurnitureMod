@@ -2,6 +2,7 @@ package com.mrcrayfish.furniture.client;
 
 import com.mrcrayfish.furniture.handler.ConfigurationHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
@@ -16,6 +17,23 @@ public class MirrorRenderGlobal extends RenderGlobal
     public MirrorRenderGlobal(Minecraft mcIn)
     {
         super(mcIn);
+    }
+
+    private WorldClient nextWorld;
+    private boolean first = true;
+    public void updateWorldLoad(WorldClient wc) {
+        if (first) {
+            this.setWorldAndLoadRenderers(wc);
+            first = false;
+        } else {
+            this.nextWorld = wc;
+        }
+    }
+
+    public void updateWorldUnload() {
+        this.setWorldAndLoadRenderers(nextWorld);
+        if (nextWorld == null) first = true;
+        nextWorld = null;
     }
 
     @Override

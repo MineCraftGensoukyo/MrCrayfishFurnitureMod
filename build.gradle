@@ -1,47 +1,85 @@
 buildscript {
     repositories {
-        jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "https://maven.minecraftforge.net/" }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+//apply plugin: "org.jetbrains.kotlin.jvm"
+apply plugin: 'net.minecraftforge.gradle'
 
-version = "6.3.0-1.12.2"
+version = "6.3.1"
 group = "com.mrcrayfish"
 archivesBaseName = "furniture"
 
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 minecraft {
-    version = "1.12.2-14.23.5.2768"
-    runDir = "run"
-    mappings = "snapshot_20171003"
+    mappings channel: 'snapshot', version: '20171003-1.12'
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+        }
+    }
 }
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven { url "http://maven.blamejared.com/" } // CraftTweaker
+    mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
-    deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.6.467"
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2859'
+    compileOnly fg.deobf("CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.6.467")
+    compileOnly fg.deobf("CraftTweaker2:CraftTweaker2-API:4.1.6.467")
+    compileOnly fg.deobf("CraftTweaker2:ZenScript:4.1.6.467")
 }
 
 processResources {
     inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property "mcversion", project.properties.mcversion
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version':project.version, 'mcversion':project.properties.mcversion
     }
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+jar {
+    archiveAppendix.set "${mcversion}"
+    archiveClassifier.set "${classifierProp}"
 }
